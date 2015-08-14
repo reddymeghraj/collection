@@ -77,22 +77,22 @@ app_version = "0.0.1"
 # Scheduled Tasks
 # ---------------
 
-scheduler_events = {
- 	"all": [
- 		"collection.collection.tasks.all"
- 	],
- #	"daily": [
- #		"collection.collection.add_owner.add_owner.mail_send"
- #	],
- 	"hourly": [
- 		"collection.collection.tasks.hourly"
-	],
+ scheduler_events = {
+# 	"all": [
+# 		"collection.tasks.all"
+# 	],
+# 	"daily": [
+# 		"collection.tasks.daily"
+# 	],
+# 	"hourly": [
+# 		"collection.tasks.hourly"
+# 	],
 # 	"weekly": [
 # 		"collection.tasks.weekly"
-# 	],
-# 	"monthly": [
-#		"collection.tasks.monthly"
 # 	]
+ 	"monthly": [
+		"collection.tasks.monthly"
+ 	]
  }
 
 # Testing

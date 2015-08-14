@@ -9,6 +9,8 @@ from datetime import date, timedelta, datetime
 import calendar
 from calendar import monthrange
 from dateutil import relativedelta as rdelta
+from frappe import sendmail
+
 
 class Collection1(Document):
 	def on_submit(self):
@@ -247,8 +249,8 @@ class Collection1(Document):
 					self.paid_amount=self.paid_amount-a
 					rd.months=rd.months-1
 				else:
-					div=(self.paid_amount)/(self.amount)
-					mod=(self.paid_amount)%(self.amount)
+					div=int(self.paid_amount)/int(self.amount)
+					mod=int(self.paid_amount)%int(self.amount)
 					if(mod>0):
 						div=int(div+1)
 					else:
@@ -344,13 +346,36 @@ class Collection1(Document):
 								if s2:
 									n2=int(s2)+1
 								else:
-									n2=1
+									n2=int(1)
 								s1=frappe.db.sql("""
 								insert into `tabCollection Info` set name=%s, date=%s, collection_id=%s, owner_id=%s, house_no=%s, owner_name=%s,collection=%s, amount=%s,
-								paid_amount=%s,remaining_amount=%s,month=%s""",(n2,dte,c_id,o_id,h,o_name,c,amt,self.paid_amount,self.amount-self.paid_amount,collect_date))
-								self.paid_amount=self.paid_amount-self.amount
+								paid_amount=%s,remaining_amount=%s,month=%s""",(n2,dte,c_id,o_id,h,o_name,c,int(amt),int(self.paid_amount),int(self.amount)-int(self.paid_amount),collect_date))
+								self.paid_amount=int(self.paid_amount)-int(self.amount)
 								if(self.paid_amount==0):
 									break
+
+		#=================================================================================
+		def mail_send(email_id,n_password):
+			
+			receiver = self.email_id
+			new_rv=self
+			#ath = frappe.get_doc("Add Owner","OW001")
+			#receiver = 'umapulkurte@gmail.com'
+			if receiver:
+				subj = 'Payment Details :- '
+				sendmail([receiver], subject=subj, 
+				message = 'Hello Sir/Madam,'+'\n'+'\nYour Payment Details Are Attached\n'+'\n'+'\nThanks & Regards,'+'\n'+'\nSahara Prestige Co-Op Housing Society',
+				attachments=[frappe.attach_print(new_rv.doctype, new_rv.name, file_name=new_rv.name, print_format='')])
+				frappe.msgprint("Mail Send")
+			else:
+				frappe.msgprint(_("Email ID not found, hence mail not sent"))
+		email = self.email_id
+		if(self.email_id):
+			mail_send(email,'fkljghlsdfghsl')
+		else:
+			frappe.msgprint("Payment Details Not sent")
+		#====================================================================================
+
 @frappe.whitelist()
 def monthdelta(d1, d2):
     delta = 0
@@ -492,3 +517,10 @@ def show_table(o_id,h,c_name,date,amount):
 	else:	
 		frappe.msgprint("No previous records to display for selected collection type")
 		return (head)
+
+@frappe.whitelist()
+def get_money_in_words(n):
+	from frappe.utils import money_in_words
+	from frappe.utils import in_words
+	x=money_in_words(n)
+	return (x)

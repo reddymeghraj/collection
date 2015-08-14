@@ -80,3 +80,16 @@ cur_frm.cscript.collection_type=function(doc,cdt,cdn)
 		}
 	})
 }
+
+cur_frm.cscript.paid_amount=function(doc,cdt,cdn)
+{
+	var n=doc.paid_amount;
+	frappe.call({
+		method:'collection.collection.doctype.collection1.collection1.get_money_in_words',
+		args:{n:n},
+		callback:function(r)
+		{
+			cur_frm.set_value('amount_in_words',r.message)
+		}
+	})
+}
